@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>🌿 Мөнхжаргал (MJ) — ERP хөгжүүлэгч</title>
+  <title>💻 Мөнхжаргал (MJ) — ERP хөгжүүлэгч</title>
   <meta name="description" content="ERP хөгжүүлэгч, Green Group-д ажилладаг. Facebook: facebook.com/Jalgall. Монголын хамгийн chill guy." />
   <style>
     :root{
@@ -101,7 +101,7 @@
     .emoji{ font-size:1.2em }
     footer{ margin-top:24px; font-size:13px; color:var(--muted); text-align:center }
 
-    /* FLOATING LEAVES */
+    /* COOL EMOJI PARTICLES */
     .particles { position: fixed; inset: 0; pointer-events:none; overflow:hidden; }
     .leaf {
       position:absolute; font-size:20px; will-change: transform, opacity;
@@ -131,7 +131,7 @@
     <div class="blob b3"></div>
   </div>
 
-  <!-- Floating leaves -->
+  <!-- Cool emoji particles -->
   <div class="particles" aria-hidden="true" id="particles"></div>
 
   <main class="card" role="main" aria-label="MJ танилцуулга" id="card">
@@ -160,12 +160,24 @@
   </main>
 
   <script>
+    // Respect reduced motion setting
+    const mediaQuery = matchMedia('(prefers-reduced-motion: reduce)');
+    let motionOK = !mediaQuery.matches;
+    mediaQuery.addEventListener('change', e=>{
+      motionOK = !e.matches;
+      if (!motionOK){
+        document.getElementById('tag').textContent = "";
+        document.getElementById('particles').innerHTML = "";
+      } else {
+        if (!typingStarted) type(); // resume typing if needed
+      }
+    });
+
     // Year
     document.getElementById('y').textContent = new Date().getFullYear();
 
     // Lightweight 3D tilt on pointer
     const card = document.getElementById('card');
-    let motionOK = !matchMedia('(prefers-reduced-motion: reduce)').matches;
     card.addEventListener('pointermove', e=>{
       if(!motionOK) return;
       const r = card.getBoundingClientRect();
@@ -184,8 +196,10 @@
       "Stress? muted. ✌️"
     ];
     const el = document.getElementById('tag');
-    let i=0, j=0, deleting=false;
+    let i=0, j=0, deleting=false, typingStarted=false;
     function type(){
+      typingStarted = true;
+      if(!motionOK) return;
       const p = phrases[i % phrases.length];
       if(!deleting){
         el.textContent = p.slice(0, ++j);
@@ -199,32 +213,34 @@
     }
     if(motionOK) type();
 
-    // Floating leaf particles (🌿)
+    // Cool emoji particles 😎🧊❄️✨💫🪐🌌🏔️🎧
     const container = document.getElementById('particles');
-    function spawnLeaf(){
+    const EMOJIS = ['😎','🧊','❄️','✨','💫','🪐','🌌','🏔️','🎧'];
+
+    function spawnLeaf(){ // class/anim нэрийг хадгалсан тул CSS таарч ажиллана
       if(!motionOK) return;
+
       const leaf = document.createElement('div');
       leaf.className = 'leaf';
-      leaf.textContent = '🌿';
-      const startX = Math.random()*100; // vw
-      const dur = 9 + Math.random()*6; // 9-15s
+      leaf.textContent = EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+
+      // санамсаргүй байрлал, хэмжээ, хугацаа
+      const startX = Math.random()*100;       // vw
+      const dur    = 9 + Math.random()*6;     // 9–15s
+      const size   = 18 + Math.random()*12;   // 18–30px
+
       leaf.style.left = startX + 'vw';
       leaf.style.setProperty('--x', startX + 'vw');
       leaf.style.setProperty('--dur', dur + 's');
+      leaf.style.fontSize = size + 'px';
+
       container.appendChild(leaf);
       // cleanup
-      setTimeout(()=> leaf.remove(), dur*1000 + 500);
+      setTimeout(()=> leaf.remove(), dur*1000 + 600);
     }
-    // burst a few on load, then gentle interval
-    for(let k=0;k<6;k++) setTimeout(spawnLeaf, k*300);
+    // эхний “burst” + тогтмол интервал
+    for (let k=0;k<6;k++) setTimeout(spawnLeaf, k*300);
     setInterval(()=> Math.random()<0.6 && spawnLeaf(), 1200);
-
-    // Respect changes to reduced motion in real-time
-    matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', e=>{
-      motionOK = !e.matches;
-      if(motionOK){ type(); }
-      else { el.textContent = ""; }
-    });
   </script>
 </body>
 </html>
