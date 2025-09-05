@@ -17,48 +17,139 @@
     @media (prefers-color-scheme: light){
       :root{ --bg:#f6f8fa; --card:#ffffff; --text:#1f2937; --muted:#6b7280; --accent:#16a34a; --link:#15803d; }
     }
+    *{box-sizing:border-box}
     body{
       margin:0;
       font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
       color:var(--text);
-      background:
-        radial-gradient(1200px 600px at 10% -10%, rgba(34,197,94,.15), transparent 60%),
-        radial-gradient(1200px 700px at 110% 10%, rgba(34,197,94,.12), transparent 50%),
-        var(--bg);
+      background: var(--bg);
       min-height:100svh; display:grid; place-items:center; padding:24px;
+      overflow:hidden;
     }
+
+    /* AURORA BACKGROUND */
+    .aurora {
+      position: fixed; inset: 0; pointer-events:none; z-index:-1;
+      filter: blur(40px) saturate(120%);
+    }
+    .blob {
+      position:absolute; width:38vw; height:38vw; max-width:720px; max-height:720px;
+      background: radial-gradient(closest-side, rgba(34,197,94,.35), transparent 70%);
+      animation: float 18s ease-in-out infinite;
+      opacity:.6;
+    }
+    .blob.b2{ left:60%; top:-10%; animation-duration: 22s; animation-delay:-5s; }
+    .blob.b3{ left:-10%; bottom:-15%; animation-duration: 26s; animation-delay:-9s; }
+    @keyframes float{
+      0%   { transform: translate3d(0,0,0) scale(1); }
+      50%  { transform: translate3d(0,-6%,0) scale(1.08); }
+      100% { transform: translate3d(0,0,0) scale(1); }
+    }
+
     .card{
+      position:relative;
       width:min(760px,100%);
-      background:var(--card);
-      border:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(180deg, color-mix(in srgb, var(--card) 94%, transparent), var(--card));
+      border:1px solid rgba(255,255,255,.09);
       border-radius:20px;
       padding:32px;
-      box-shadow:0 10px 40px rgba(0,0,0,.3);
-      animation: fadein 1s ease-out;
+      box-shadow:0 10px 40px rgba(0,0,0,.35);
+      animation: fadein 800ms ease-out both;
+      transform-style:preserve-3d;
+      will-change: transform;
+      overflow:hidden;
+      isolation:isolate;
     }
-    @keyframes fadein{ from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:none;} }
+    /* subtle shine */
+    .card::after{
+      content:"";
+      position:absolute; inset:-20%;
+      background: conic-gradient(from 0deg at 50% -10%, rgba(255,255,255,.14), transparent 45%, transparent 100%);
+      transform: translate3d(0,0,0);
+      animation: sweep 8s linear infinite;
+      pointer-events:none; mix-blend-mode:soft-light;
+    }
+    @keyframes sweep{
+      0%{ transform: translate3d(-10%,0,0) rotate(0deg); }
+      100%{ transform: translate3d(10%,0,0) rotate(360deg); }
+    }
+    @keyframes fadein{ from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+
     h1{
       margin:0 0 8px; font-size:clamp(26px,5vw,38px);
       display:flex; gap:12px; align-items:center; color:var(--accent);
+      letter-spacing:.2px;
     }
+    h1 .pop { display:inline-block; animation: popin 700ms cubic-bezier(.2,.8,.2,1) both; }
+    h1 .pop:nth-child(2){ animation-delay:.05s } 
+    h1 .pop:nth-child(3){ animation-delay:.1s }
+    @keyframes popin{ from{transform:translateY(10px) scale(.98); opacity:0} to{transform:none; opacity:1} }
+
     h2{ margin:0; font-size:clamp(18px,3.5vw,22px); color:var(--muted) }
-    .tagline{ margin:20px 0; font-size:15px; line-height:1.6; }
-    ul{ list-style:none; padding:0; margin:18px 0 0; display:grid; gap:14px; }
-    li{ padding:14px 16px; border:1px dashed rgba(255,255,255,.12); border-radius:12px }
-    a{ color:var(--link); text-decoration:none; }
+
+    .tagline{ margin:16px 0 4px; font-size:15px; line-height:1.6; color:var(--text) }
+    .caret{ display:inline-block; width:8px; margin-left:2px; background:currentColor; height:1em; vertical-align:bottom; animation: blink 1s steps(1) infinite }
+    @keyframes blink{ 50%{opacity:0} }
+
+    ul{ list-style:none; padding:0; margin:16px 0 0; display:grid; gap:14px }
+    li{ padding:14px 16px; border:1px dashed rgba(255,255,255,.12); border-radius:12px; background:rgba(255,255,255,.02); transition: transform .25s ease, background .25s ease, border-color .25s ease }
+    li:hover{ transform: translateY(-2px); background:rgba(255,255,255,.04); border-color: rgba(255,255,255,.18) }
+
+    a{ color:var(--link); text-decoration:none }
     a:hover{ text-decoration:underline }
+
     .emoji{ font-size:1.2em }
     footer{ margin-top:24px; font-size:13px; color:var(--muted); text-align:center }
+
+    /* FLOATING LEAVES */
+    .particles { position: fixed; inset: 0; pointer-events:none; overflow:hidden; }
+    .leaf {
+      position:absolute; font-size:20px; will-change: transform, opacity;
+      animation: fall var(--dur,10s) linear forwards;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,.25));
+      opacity:.9;
+    }
+    @keyframes fall{
+      0%   { transform: translate3d(var(--x,0), -10%, 0) rotate(0deg); opacity:0 }
+      10%  { opacity:1 }
+      50%  { transform: translate3d(calc(var(--x,0) + 2vw), 50vh, 0) rotate(90deg) }
+      100% { transform: translate3d(calc(var(--x,0) - 2vw), 105vh, 0) rotate(180deg); opacity:0 }
+    }
+
+    /* reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      .blob, .card::after, .leaf, .caret, h1 .pop { animation: none !important }
+      .card, body { transform: none !important }
+    }
   </style>
 </head>
 <body>
-  <main class="card" role="main" aria-label="MJ танилцуулга">
-    <h1>🌿 Мөнхжаргал (MJ)</h1>
+  <!-- Aurora layers -->
+  <div class="aurora" aria-hidden="true">
+    <div class="blob b1" style="left:-15%; top:-10%"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
+  <!-- Floating leaves -->
+  <div class="particles" aria-hidden="true" id="particles"></div>
+
+  <main class="card" role="main" aria-label="MJ танилцуулга" id="card">
+    <h1>
+      <span class="pop">🌿</span>
+      <span class="pop">Мөнхжаргал</span>
+      <span class="pop">(MJ)</span>
+    </h1>
     <h2>ERP хөгжүүлэгч</h2>
+
+    <!-- Typewriter tagline (auto-rotating) -->
+    <p class="tagline" aria-live="polite">
+      <span id="tag"></span><span class="caret" aria-hidden="true"></span>
+    </p>
 
     <ul>
       <li>💼 <strong>Green Group</strong>-д ажилладаг</li>
-      <li>📲 Facebook: 
+      <li>📲 Facebook:
         <a href="https://facebook.com/Jalgall" target="_blank" rel="noopener">facebook.com/Jalgall</a>
       </li>
       <li>📞 Утас: <a href="tel:+97695455451">95455451</a></li>
@@ -69,7 +160,71 @@
   </main>
 
   <script>
+    // Year
     document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Lightweight 3D tilt on pointer
+    const card = document.getElementById('card');
+    let motionOK = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    card.addEventListener('pointermove', e=>{
+      if(!motionOK) return;
+      const r = card.getBoundingClientRect();
+      const rx = ((e.clientY - r.top)/r.height - .5)*6;  // max 6deg
+      const ry = ((e.clientX - r.left)/r.width - .5)*-6;
+      card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+    });
+    card.addEventListener('pointerleave', ()=>{ card.style.transform = 'none'; });
+
+    // Typewriter rotating phrases
+    const phrases = [
+      "Монголын тайван урсгалын төлөөлөгч",
+      "100% chill, 0% drama",
+      "Зөөлөн ярьж, зөв хийдэг",
+      "Slow & steady 🐢",
+      "Stress? muted. ✌️"
+    ];
+    const el = document.getElementById('tag');
+    let i=0, j=0, deleting=false;
+    function type(){
+      const p = phrases[i % phrases.length];
+      if(!deleting){
+        el.textContent = p.slice(0, ++j);
+        if(j === p.length){ deleting = true; setTimeout(type, 1400); return; }
+      }else{
+        el.textContent = p.slice(0, --j);
+        if(j === 0){ deleting = false; i++; }
+      }
+      const speed = deleting ? 28 : 40;
+      setTimeout(type, speed);
+    }
+    if(motionOK) type();
+
+    // Floating leaf particles (🌿)
+    const container = document.getElementById('particles');
+    function spawnLeaf(){
+      if(!motionOK) return;
+      const leaf = document.createElement('div');
+      leaf.className = 'leaf';
+      leaf.textContent = '🌿';
+      const startX = Math.random()*100; // vw
+      const dur = 9 + Math.random()*6; // 9-15s
+      leaf.style.left = startX + 'vw';
+      leaf.style.setProperty('--x', startX + 'vw');
+      leaf.style.setProperty('--dur', dur + 's');
+      container.appendChild(leaf);
+      // cleanup
+      setTimeout(()=> leaf.remove(), dur*1000 + 500);
+    }
+    // burst a few on load, then gentle interval
+    for(let k=0;k<6;k++) setTimeout(spawnLeaf, k*300);
+    setInterval(()=> Math.random()<0.6 && spawnLeaf(), 1200);
+
+    // Respect changes to reduced motion in real-time
+    matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', e=>{
+      motionOK = !e.matches;
+      if(motionOK){ type(); }
+      else { el.textContent = ""; }
+    });
   </script>
 </body>
 </html>
